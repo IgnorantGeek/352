@@ -4,12 +4,9 @@ LDFLAGS  := -L/usr/lib -lstdc++ -lm
 BUILD    := ./bin
 OBJ_DIR  := $(BUILD)/objects
 APP_DIR  := $(BUILD)/apps
-TARGET   := program
+TARGET   := rbtree
 INCLUDE  := -Iinclude/
 SRC      :=                      \
-   $(wildcard src/module1/*.cpp) \
-   $(wildcard src/module2/*.cpp) \
-   $(wildcard src/module3/*.cpp) \
    $(wildcard src/*.cpp)         \
 
 OBJECTS := $(SRC:%.cpp=$(OBJ_DIR)/%.o)
