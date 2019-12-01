@@ -13,8 +13,8 @@
 typedef struct node
 {
     int key;
-    node_t * left;
-    node_t * right;
+    struct node * left;
+    struct node * right;
     bool color;
     std::mutex m;
 } node_t;

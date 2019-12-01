@@ -2,13 +2,16 @@
 
 using namespace std;
 
-int main(int argc, char *argv[])
+int main()
 {
-    if (argc == 0)
-    {
-        // either error or prompt the user to enter a file
-    }
+    // if (argc != 0)
+    // {
+    //     // either error or prompt the user to enter a file
+    //     char * in = argv[0];
+    // }
     tree_t bTree;
+    int search_threads;
+    int modify_threads;
     return 0;
 }
 
@@ -32,7 +35,7 @@ bool build_from_file(tree_t* tree, char * fname)
             node_t in;
             in.color = BLACK;
             string sub;
-            for (int i = 0; i < line.length(); i++)
+            for (size_t i = 0; i < line.length(); i++)
             {
                 if (sub.at(i) != 'b') sub += line.at(i);
             }
@@ -49,7 +52,7 @@ bool build_from_file(tree_t* tree, char * fname)
             node_t in;
             in.color = RED;
             string sub;
-            for (int i = 0; i < line.length(); i++)
+            for (size_t i = 0; i < line.length(); i++)
             {
                 if (sub.at(i) != 'r') sub += line.at(i);
             }
@@ -63,6 +66,10 @@ bool build_from_file(tree_t* tree, char * fname)
         if (line.front() == 'f')
         {
             // leaf node
+            node_t in;
+            in.color = BLACK;
+            in.key = -1; // leaf marker
+            insert_to_tree(tree, &in);
         }
     }
 
@@ -78,4 +85,9 @@ void insert_to_tree(tree_t * tree, node_t* in)
         else scan = scan->left;
     }
     scan = in;
+}
+
+void print_tree(tree_t * tree)
+{
+
 }
