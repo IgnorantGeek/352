@@ -7,6 +7,7 @@
 #include <pthread.h>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <mutex>
 
 typedef struct node

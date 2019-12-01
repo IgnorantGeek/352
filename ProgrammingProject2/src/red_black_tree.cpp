@@ -23,15 +23,42 @@ bool build_from_file(tree_t* tree, char * fname)
         return false;
     }
     string line;
+    // going to have to change how I scan the file
     while (getline(inFile, line))
     {
         if (line.back() == 'b')
         {
             // black node
+            node_t in;
+            in.color = BLACK;
+            string sub;
+            for (int i = 0; i < line.length(); i++)
+            {
+                if (sub.at(i) != 'b') sub += line.at(i);
+            }
+            stringstream to_int(sub);
+            int hold = 0;
+            to_int >> hold;
+
+            in.key = hold;
+            insert_to_tree(tree, &in);
         }
         if (line.back() == 'r')
         {
             // red node
+            node_t in;
+            in.color = RED;
+            string sub;
+            for (int i = 0; i < line.length(); i++)
+            {
+                if (sub.at(i) != 'r') sub += line.at(i);
+            }
+            stringstream to_int(sub);
+            int hold = 0;
+            to_int >> hold;
+
+            in.key = hold;
+            insert_to_tree(tree, &in);
         }
         if (line.front() == 'f')
         {
