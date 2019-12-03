@@ -9,9 +9,9 @@ int main()
     //     // either error or prompt the user to enter a file
     //     char * in = argv[0];
     // }
-    tree_t bTree;
-    int search_threads;
-    int modify_threads;
+    // tree_t bTree;
+    // int search_threads;
+    // int modify_threads;
     return 0;
 }
 
@@ -78,7 +78,7 @@ bool build_from_file(tree_t* tree, char * fname)
 
 void insert_to_tree(tree_t * tree, node_t* in)
 {
-    node_t * scan = tree->root; // start at the root node
+    node_t * scan = tree->root;
     while (scan != nullptr)
     {
         if (in->key > scan->key) scan = scan->right;
@@ -87,7 +87,58 @@ void insert_to_tree(tree_t * tree, node_t* in)
     scan = in;
 }
 
-void print_tree(tree_t * tree)
+void remove_from_tree(tree_t * tree, node_t * out)
 {
+    node_t * scan = tree->root;
+    while (scan != nullptr)
+    {
+        if (scan->key == out->key)
+        {
+            // remove scan
+        }
+        if (out->key > scan->key) scan = scan->right;
+        if (out->key < scan->key) scan = scan->left;
+    }
+}
 
+node_t * search_tree(tree_t * tree, node_t * find)
+{
+    node_t * scan = tree->root;
+    while (scan != nullptr)
+    {
+        if (find->key == scan->key) return scan;
+        if (find->key > scan->key) scan = scan->right;
+        if (find->key < scan->key) scan = scan->left;
+    }
+    return nullptr;
+}
+
+// void balance_tree(tree_t * tree)
+// {
+
+// }
+
+// void print_tree(tree_t * tree)
+// {
+
+// }
+
+void left_rotate(tree_t * tree, node_t * n)
+{
+    node_t * y = n->right;
+    n->right = y->left;
+    if (y->left != nullptr) y->left->parent = n;
+    y->parent = n->parent;
+    if (n->parent == nullptr) tree->root = y;
+    else if (n == n->parent->left) n->parent->left = y;
+    else n->parent->right = y;
+    y->left = n;
+    n->parent = y;
+}
+
+void print_node(node_t * node)
+{
+    cout << node->key << endl;
+    cout << node->color << endl;
+    cout << "Left : " << node->left->key << " || Right : " << node->right->key << "\n" << endl;
 }

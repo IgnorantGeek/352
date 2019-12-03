@@ -8,24 +8,26 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <mutex>
 
 typedef struct node
 {
     int key;
     struct node * left;
     struct node * right;
+    struct node * parent;
     bool color;
-    std::mutex m;
 } node_t;
 
 typedef struct tree
 {
     node_t * root;
-    std::mutex m; // not sure if I need this
 } tree_t;
 
 void insert_to_tree(tree_t * tree, node_t * in);
-void delete_from_tree(tree_t * tree, node_t * del);
+void delete_from_tree(tree_t * tree, node_t * out);
+node_t * search_tree(tree_t * tree, node_t * find);
+void balance_tree(tree_t * tree);
+void left_rotate(tree_t * tree, node_t * n);
+void right_rotate(tree_t * tree, node_t * n);
 
 #endif
