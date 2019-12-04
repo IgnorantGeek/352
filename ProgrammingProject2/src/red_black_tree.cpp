@@ -68,7 +68,7 @@ bool build_from_file(tree_t* tree, char * fname)
             // leaf node
             node_t in;
             in.color = BLACK;
-            in.key = -1; // leaf marker
+            in.key = NIL_KEY; // leaf marker
             insert_to_tree(tree, &in);
         }
     }
@@ -118,10 +118,16 @@ node_t * search_tree(tree_t * tree, node_t * find)
 
 // }
 
-// void print_tree(tree_t * tree)
-// {
-
-// }
+void rec_print_tree(tree_t * tree, node_t * curr)
+{
+    if (curr->key == NIL_KEY) print_node(curr);
+    else 
+    {
+        print_node(curr);
+        rec_print_tree(tree, curr->right);
+        rec_print_tree(tree, curr->left);
+    }
+}
 
 void left_rotate(tree_t * tree, node_t * n)
 {

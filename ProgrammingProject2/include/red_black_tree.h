@@ -3,6 +3,7 @@
 
 #define RED true
 #define BLACK false
+#define NIL_KEY -1
 
 #include <pthread.h>
 #include <iostream>
