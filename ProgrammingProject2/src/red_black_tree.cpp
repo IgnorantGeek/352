@@ -2,20 +2,37 @@
 
 using namespace std;
 
-int main()
+/**
+ * Main entry point of the application
+ * */
+int main(int argc, char* argv[])
 {
-    // if (argc != 0)
-    // {
-    //     // either error or prompt the user to enter a file
-    //     char * in = argv[0];
-    // }
-    // tree_t bTree;
-    // int search_threads;
-    // int modify_threads;
+    char * fname = "";
+    int searchThreads;
+    int modifyThreads;
+    if (argc == 0)
+    {
+        // either error or prompt the user to enter a file
+        cout << "No input file detected. Using default file location at: " << DEFAULT_FILE_LOC << endl;
+        fname = DEFAULT_FILE_LOC;
+    }
+    else fname = argv[0];
+    tree_t bTree;
+    if (!build_from_file(&bTree, fname, searchThreads, modifyThreads))
+    {
+        cout << "Error reading the input file. Exiting." << endl;
+        return 1;
+    }
     return 0;
 }
 
-bool build_from_file(tree_t* tree, char * fname)
+/**
+ * Function that initializes the binary tree and builds the structure from a file
+ * */
+bool build_from_file(tree_t* tree,
+                     char * fname,
+                     int search_threads,
+                     int modify_threads)
 {
     ifstream inFile;
     inFile.open(fname, ios::in);
@@ -26,7 +43,9 @@ bool build_from_file(tree_t* tree, char * fname)
         return false;
     }
     string line;
-    // going to have to change how I scan the file
+    
+
+    // FIX READING THE FILE
     while (getline(inFile, line))
     {
         if (line.back() == 'b')
@@ -76,6 +95,9 @@ bool build_from_file(tree_t* tree, char * fname)
     return true;
 }
 
+/**
+ * Method to insert a new node into the tree
+ */
 void insert_to_tree(tree_t * tree, node_t* in)
 {
     node_t * scan = tree->root;
@@ -87,6 +109,9 @@ void insert_to_tree(tree_t * tree, node_t* in)
     scan = in;
 }
 
+/** 
+ * Method to remove a node from the tree
+ */
 void remove_from_tree(tree_t * tree, node_t * out)
 {
     node_t * scan = tree->root;
@@ -101,6 +126,9 @@ void remove_from_tree(tree_t * tree, node_t * out)
     }
 }
 
+/** 
+ * Method to find a specified node in the tree
+ */
 node_t * search_tree(tree_t * tree, node_t * find)
 {
     node_t * scan = tree->root;
@@ -118,6 +146,9 @@ node_t * search_tree(tree_t * tree, node_t * find)
 
 // }
 
+/** 
+ * Recursively prints all the nodes in the tree
+ */
 void rec_print_tree(tree_t * tree, node_t * curr)
 {
     if (curr->key == NIL_KEY) print_node(curr);
@@ -129,6 +160,9 @@ void rec_print_tree(tree_t * tree, node_t * curr)
     }
 }
 
+/** 
+ * Performs a left rotate at a given node in the tree
+ */
 void left_rotate(tree_t * tree, node_t * n)
 {
     node_t * y = n->right;
@@ -142,6 +176,9 @@ void left_rotate(tree_t * tree, node_t * n)
     n->parent = y;
 }
 
+/** 
+ * Prints a given node
+ */
 void print_node(node_t * node)
 {
     cout << node->key << endl;

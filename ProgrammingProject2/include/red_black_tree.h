@@ -4,12 +4,14 @@
 #define RED true
 #define BLACK false
 #define NIL_KEY -1
+#define DEFAULT_FILE_LOC "/home/nick/Downloads/" // this is the default file location if you don't want to type in the file every time
 
 #include <pthread.h>
 #include <iostream>
 #include <fstream>
 #include <sstream>
 
+// Node structure
 typedef struct node
 {
     int key;
@@ -19,6 +21,7 @@ typedef struct node
     bool color;
 } node_t;
 
+// Tree structure (probably needs to include a semaphore)
 typedef struct tree
 {
     node_t * root;
