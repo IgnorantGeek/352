@@ -3,34 +3,10 @@
 using namespace std;
 
 /**
- * Main entry point of the application
- * */
-int main(int argc, char* argv[])
-{
-    char * fname = "";
-    int searchThreads;
-    int modifyThreads;
-    if (argc == 0)
-    {
-        // either error or prompt the user to enter a file
-        cout << "No input file detected. Using default file location at: " << DEFAULT_FILE_LOC << endl;
-        fname = DEFAULT_FILE_LOC;
-    }
-    else fname = argv[0];
-    tree_t bTree;
-    if (!build_from_file(&bTree, fname, searchThreads, modifyThreads))
-    {
-        cout << "Error reading the input file. Exiting." << endl;
-        return 1;
-    }
-    return 0;
-}
-
-/**
  * Function that initializes the binary tree and builds the structure from a file
  * */
 bool build_from_file(tree_t* tree,
-                     char * fname,
+                     char const * fname,
                      int search_threads,
                      int modify_threads)
 {
@@ -44,54 +20,51 @@ bool build_from_file(tree_t* tree,
     }
     string line;
     
+    string tree_nodes;
 
-    // FIX READING THE FILE
-    while (getline(inFile, line))
+    getline(inFile, tree_nodes);
+
+    
+    string hold_str = "";
+    node_t hold_node;
+    for (size_t i = 0; i < tree_nodes.length(); i++)
     {
-        if (line.back() == 'b')
+        if (tree_nodes.at(i) == ',')
         {
-            // black node
-            node_t in;
-            in.color = BLACK;
-            string sub;
-            for (size_t i = 0; i < line.length(); i++)
-            {
-                if (sub.at(i) != 'b') sub += line.at(i);
-            }
-            stringstream to_int(sub);
-            int hold = 0;
-            to_int >> hold;
-
-            in.key = hold;
-            insert_to_tree(tree, &in);
+            insert_to_tree(tree, &hold_node);
+            hold_str = "";
+            node_t reset;
+            cout << "Resent num is : " << reset.key << endl;
+            cout << "hold_node is currently : " << hold_node.key << "\nreseting hold node..." << endl;
+            hold_node = reset;
+            cout << "hold_node is now : " << hold_node.key << endl;
         }
-        if (line.back() == 'r')
+        else if (tree_nodes.at(i) == 'b')
+        {
+            hold_node.key = stoi(hold_str);
+            hold_node.color = BLACK;
+            
+        }
+        else if (tree_nodes.at(i) == 'r')
         {
             // red node
-            node_t in;
-            in.color = RED;
-            string sub;
-            for (size_t i = 0; i < line.length(); i++)
-            {
-                if (sub.at(i) != 'r') sub += line.at(i);
-            }
-            stringstream to_int(sub);
-            int hold = 0;
-            to_int >> hold;
-
-            in.key = hold;
-            insert_to_tree(tree, &in);
+            hold_node.color = RED;
+            hold_node.key = stoi(hold_str);
         }
-        if (line.front() == 'f')
+        else if (tree_nodes.at(i) == 'f')
         {
             // leaf node
-            node_t in;
-            in.color = BLACK;
-            in.key = NIL_KEY; // leaf marker
-            insert_to_tree(tree, &in);
+            hold_node.color = BLACK;
+            hold_node.key = NIL_KEY; // leaf marker
+        }
+        else
+        {
+            hold_str.push_back(tree_nodes.at(i));
         }
     }
-
+    search_threads = 1;
+    modify_threads = 1;
+    cout << search_threads << " " << modify_threads << endl;
     return true;
 }
 
@@ -184,4 +157,28 @@ void print_node(node_t * node)
     cout << node->key << endl;
     cout << node->color << endl;
     cout << "Left : " << node->left->key << " || Right : " << node->right->key << "\n" << endl;
+}
+
+/**
+ * Main entry point of the application
+ * */
+int main(int argc, char* argv[])
+{
+    char const * fname;
+    int searchThreads = 0;
+    int modifyThreads = 0;
+    if (argc == 0)
+    {
+        // either error or prompt the user to enter a file
+        cout << "No input file detected. Using default file location at: " << DEFAULT_FILE_LOC << endl;
+        fname = DEFAULT_FILE_LOC;
+    }
+    else fname = argv[0];
+    tree_t bTree;
+    if (!build_from_file(&bTree, fname, searchThreads, modifyThreads))
+    {
+        cout << "Error reading the input file. Exiting." << endl;
+        return 1;
+    }
+    return 0;
 }

@@ -4,12 +4,12 @@
 #define RED true
 #define BLACK false
 #define NIL_KEY -1
-#define DEFAULT_FILE_LOC "/home/nick/Downloads/" // this is the default file location if you don't want to type in the file every time
 
 #include <pthread.h>
 #include <iostream>
 #include <fstream>
-#include <sstream>
+
+char const * DEFAULT_FILE_LOC = "/home/nick/Downloads/RBTinput-1-1.txt"; // this is the default file location if you don't want to type in the file every time
 
 // Node structure
 typedef struct node
@@ -33,5 +33,7 @@ node_t * search_tree(tree_t * tree, node_t * find);
 void balance_tree(tree_t * tree);
 void left_rotate(tree_t * tree, node_t * n);
 void right_rotate(tree_t * tree, node_t * n);
+void print_node(node_t * node);
+bool build_from_file(tree_t* tree, char const * fname, int search_threads, int modify_threads);
 
 #endif
