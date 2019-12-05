@@ -23,21 +23,30 @@ bool build_from_file(tree_t* tree,
     string tree_nodes;
 
     getline(inFile, tree_nodes);
-
     
     string hold_str = "";
-    node_t hold_node;
+    node_t hold_node = {
+        0,
+        nullptr,
+        nullptr,
+        nullptr,
+        false,
+    };
+    node_t * parent = nullptr;
     for (size_t i = 0; i < tree_nodes.length(); i++)
     {
         if (tree_nodes.at(i) == ',')
         {
-            insert_to_tree(tree, &hold_node);
+            append_to_tree(tree, parent, &hold_node);
+            parent = &hold_node;
             hold_str = "";
-            node_t reset;
-            cout << "Resent num is : " << reset.key << endl;
-            cout << "hold_node is currently : " << hold_node.key << "\nreseting hold node..." << endl;
-            hold_node = reset;
-            cout << "hold_node is now : " << hold_node.key << endl;
+            hold_node = {
+                0,
+                nullptr,
+                nullptr,
+                nullptr,
+                false,
+            };
         }
         else if (tree_nodes.at(i) == 'b')
         {
@@ -62,9 +71,21 @@ bool build_from_file(tree_t* tree,
             hold_str.push_back(tree_nodes.at(i));
         }
     }
-    search_threads = 1;
-    modify_threads = 1;
-    cout << search_threads << " " << modify_threads << endl;
+    append_to_tree(tree, parent, &hold_node);
+    getline(inFile, line);
+    string hold = "";
+    for (size_t i = 16; i < line.length(); i++)
+    {
+        hold += line.at(i);
+    }
+    search_threads = stoi(hold);
+    getline(inFile, line);
+    hold = "";
+    for (size_t i = 16; i < line.length(); i++)
+    {
+        hold += line.at(i);
+    }
+    modify_threads = stoi(hold);
     return true;
 }
 
@@ -73,13 +94,54 @@ bool build_from_file(tree_t* tree,
  */
 void insert_to_tree(tree_t * tree, node_t* in)
 {
-    node_t * scan = tree->root;
-    while (scan != nullptr)
+    if (tree->root == nullptr) 
     {
-        if (in->key > scan->key) scan = scan->right;
-        else scan = scan->left;
+        tree->root = in;
+        return;
     }
-    scan = in;
+    else
+    {
+        node_t * scan = tree->root;
+        while (scan != nullptr)
+        {
+
+        }
+    }
+    
+}
+
+/** 
+ * Method for adding nodes to the tree when building from a file
+ */
+void append_to_tree(tree_t * tree, node_t * parent, node_t * child)
+{
+    if (tree->root == nullptr)
+    {
+        tree->root = child;
+    }
+    else
+    {
+        cout << "Parent key: " << parent->key << endl;
+        if (child ->key == NIL_KEY)
+        {
+            if (parent->left == nullptr) parent->left = child;
+            else if (parent->right == nullptr) parent -> right = child;
+            else throw "Huston we have a problem.";
+            child->parent = parent;
+            parent = parent->parent;
+        }
+        if (child->key < parent->key)
+        {
+            parent->left = child;
+            child->parent = parent;
+        }
+        else
+        {
+            parent->right = child;
+            child->parent = parent;
+        }
+    }
+    cout << child->key << endl;
 }
 
 /** 
@@ -156,29 +218,24 @@ void print_node(node_t * node)
 {
     cout << node->key << endl;
     cout << node->color << endl;
-    cout << "Left : " << node->left->key << " || Right : " << node->right->key << "\n" << endl;
 }
 
 /**
  * Main entry point of the application
  * */
-int main(int argc, char* argv[])
+int main()
 {
-    char const * fname;
+    char const * fname = DEFAULT_FILE_LOC;
     int searchThreads = 0;
     int modifyThreads = 0;
-    if (argc == 0)
-    {
-        // either error or prompt the user to enter a file
-        cout << "No input file detected. Using default file location at: " << DEFAULT_FILE_LOC << endl;
-        fname = DEFAULT_FILE_LOC;
-    }
-    else fname = argv[0];
-    tree_t bTree;
+    tree_t bTree = {nullptr};
     if (!build_from_file(&bTree, fname, searchThreads, modifyThreads))
     {
         cout << "Error reading the input file. Exiting." << endl;
         return 1;
     }
+    cout << bTree.root->key << endl;
+    // rec_print_tree(&bTree, bTree.root);
+    cout << searchThreads << " " << modifyThreads << endl;
     return 0;
 }

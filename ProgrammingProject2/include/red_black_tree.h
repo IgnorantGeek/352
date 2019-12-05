@@ -27,6 +27,7 @@ typedef struct tree
     node_t * root;
 } tree_t;
 
+void append_to_tree(tree_t * tree, node_t * parent, node_t * child);
 void insert_to_tree(tree_t * tree, node_t * in);
 void delete_from_tree(tree_t * tree, node_t * out);
 node_t * search_tree(tree_t * tree, node_t * find);
