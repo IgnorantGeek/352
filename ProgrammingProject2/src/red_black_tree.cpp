@@ -32,13 +32,39 @@ bool build_from_file(tree_t* tree,
         nullptr,
         false,
     };
-    node_t * parent = nullptr;
+    node_t parent_node = {
+        0,
+        nullptr,
+        nullptr,
+        nullptr,
+        false,
+    };
     for (size_t i = 0; i < tree_nodes.length(); i++)
     {
         if (tree_nodes.at(i) == ',')
         {
-            append_to_tree(tree, parent, &hold_node);
-            parent = &hold_node;
+            append_to_tree(tree, &parent_node, &hold_node);
+            cout << "Hold node: " << hold_node.key << endl;
+            if (hold_node.parent != nullptr) cout << "Parent node: " << hold_node.parent->key << "\n" << endl;
+            if (hold_node.key == NIL_KEY)
+            {
+                while (true)
+                {
+                    hold_node = *hold_node.parent;
+                    if (hold_node.right == nullptr)
+                    {
+                        parent_node = hold_node;
+                        break;
+                    }
+                    else if (hold_node.left == nullptr) // REMOVE ME
+                    {
+                        cout << "We should never see this" << endl;
+                        parent_node = hold_node;
+                        break;
+                    }
+                }
+            }
+            else parent_node = hold_node;
             hold_str = "";
             hold_node = {
                 0,
@@ -71,7 +97,7 @@ bool build_from_file(tree_t* tree,
             hold_str.push_back(tree_nodes.at(i));
         }
     }
-    append_to_tree(tree, parent, &hold_node);
+    append_to_tree(tree, &parent_node, &hold_node);
     getline(inFile, line);
     string hold = "";
     for (size_t i = 16; i < line.length(); i++)
@@ -121,16 +147,15 @@ void append_to_tree(tree_t * tree, node_t * parent, node_t * child)
     }
     else
     {
-        cout << "Parent key: " << parent->key << endl;
+        //cout << "Parent key: " << parent->key << endl;
         if (child ->key == NIL_KEY)
         {
             if (parent->left == nullptr) parent->left = child;
             else if (parent->right == nullptr) parent -> right = child;
             else throw "Huston we have a problem.";
             child->parent = parent;
-            parent = parent->parent;
         }
-        if (child->key < parent->key)
+        else if (child->key < parent->key)
         {
             parent->left = child;
             child->parent = parent;
@@ -141,7 +166,8 @@ void append_to_tree(tree_t * tree, node_t * parent, node_t * child)
             child->parent = parent;
         }
     }
-    cout << child->key << endl;
+    cout << "Current Node: " << child->key << endl;
+    if (child->parent != nullptr) cout << "Parent Node: " << child->parent->key << endl;
 }
 
 /** 
