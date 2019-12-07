@@ -9,32 +9,44 @@
 #include <iostream>
 #include <fstream>
 
-char const * DEFAULT_FILE_LOC = "/home/nick/Downloads/RBTinput-1-1.txt"; // this is the default file location if you don't want to type in the file every time
+char const * DEFAULT_FILE_LOC = "/home/nick/Documents/Workspaces/352/ProgrammingProject2/inFile.txt"; // this is the default file location if you don't want to type in the file every time
 
-// Node structure
-typedef struct node
+class node
 {
-    int key;
-    struct node * left;
-    struct node * right;
-    struct node * parent;
-    bool color;
-} node_t;
+    private:
+        int key;
+        bool color;
+        node * left;
+        node * right;
+        node * parent;
+    public:
+        node();
+        ~node();
+        node(int key);
+        node(int key, node * _parent);
+        void set_left(node * _left);
+        void set_right(node * _right);
+        void set_color(bool _color);
+        void set_children(node * _left, node * _right);
+        void print();
+        node * left() { return left; }
+        node * right() { return right; }
+        node * parent() { return parent; }
+        int key() { return key; }
+};
 
-// Tree structure (probably needs to include a semaphore)
-typedef struct tree
+class tree
 {
-    node_t * root;
-} tree_t;
-
-void append_to_tree(tree_t * tree, node_t * parent, node_t * child);
-void insert_to_tree(tree_t * tree, node_t * in);
-void delete_from_tree(tree_t * tree, node_t * out);
-node_t * search_tree(tree_t * tree, node_t * find);
-void balance_tree(tree_t * tree);
-void left_rotate(tree_t * tree, node_t * n);
-void right_rotate(tree_t * tree, node_t * n);
-void print_node(node_t * node);
-bool build_from_file(tree_t* tree, char const * fname, int search_threads, int modify_threads);
+    public:
+        node * root;
+        node * location;
+        tree();
+        ~tree();
+        void build_from_file(char const * fname, int search_threads, int modify_threads);
+        void add_node(node * insert);
+        void left_rotate(node * about);
+        void right_rotate(node * about);
+        void print_tree();
+};
 
 #endif
