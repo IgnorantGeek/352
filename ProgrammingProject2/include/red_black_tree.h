@@ -13,7 +13,7 @@ char const * DEFAULT_FILE_LOC = "/home/nick/Documents/Workspaces/352/Programming
 
 class node
 {
-    private:
+    protected:
         int key;
         bool color;
         node * left;
@@ -23,16 +23,17 @@ class node
         node();
         ~node();
         node(int key);
-        node(int key, node * _parent);
+        node(int key, bool color);
         void set_left(node * _left);
         void set_right(node * _right);
+        void set_parent(node * _parent);
         void set_color(bool _color);
         void set_children(node * _left, node * _right);
         void print();
-        node * left() { return left; }
-        node * right() { return right; }
-        node * parent() { return parent; }
-        int key() { return key; }
+        node * get_left() { return left; }
+        node * get_right() { return right; }
+        node * get_parent() { return parent; }
+        int get_key() { return key; }
 };
 
 class tree

@@ -2,11 +2,9 @@
 
 using namespace std;
 
-
-
 void node::set_children(node * _left, node * _right)
 {
-    this->left = _left;
+    left = _left;
     this->right = _right;
 }
 
@@ -23,6 +21,17 @@ void node::set_left(node * _left)
 void node::set_right(node * _right)
 {
     this->right = _right;
+}
+
+void node::set_parent(node * _parent)
+{
+    this->parent = _parent;
+}
+
+void node::print()
+{
+    cout << this->key << endl;
+    cout << this->color << endl;
 }
 
 node::node()
@@ -43,14 +52,16 @@ node::node(int key)
     this->parent = nullptr;
 }
 
-node::node(int key, node * _parent)
+node::node(int key, bool color)
 {
     this->key = key;
-    this->color = false;
+    this->color = color;
     this->left = nullptr;
     this->right = nullptr;
-    this->parent = _parent;
+    this->parent = nullptr;
 }
+
+
 
 tree::tree()
 {
@@ -62,9 +73,7 @@ tree::~tree()
 {
     // delete all the nodes underneath root, then delete root
 }
-/**
- * Function that initializes the binary tree and builds the structure from a file
- * */
+
 void tree::build_from_file(char const * fname,
                            int search_threads,
                            int modify_threads)
@@ -84,72 +93,61 @@ void tree::build_from_file(char const * fname,
     getline(inFile, tree_nodes);
     
     string hold_str = "";
-    // for (size_t i = 0; i < tree_nodes.length(); i++)
-    // {
-    //     if (tree_nodes.at(i) == ',')
-    //     {
-    //         cout << "Hold node: " << hold_node.key << endl;
-    //         add_child(tree, &hold_node);
-    //         hold_str = "";
-    //         hold_node = {
-    //             0,
-    //             nullptr,
-    //             nullptr,
-    //             nullptr,
-    //             false,
-    //         };
-    //     }
-    //     else if (tree_nodes.at(i) == 'b')
-    //     {
-    //         hold_node.key = stoi(hold_str);
-    //         hold_node.color = BLACK;
+    int hold_key = 0;
+    bool hold_color = BLACK;
+    for (size_t i = 0; i < tree_nodes.length(); i++)
+    {
+        if (tree_nodes.at(i) == ',')
+        {
+            node * hold_node = new node(hold_key, hold_color);
+            cout << "New node found: " << hold_node->get_key() << endl;
+            this->add_node(hold_node);
+            hold_key = 0;
+            hold_color = BLACK;
+            hold_str = "";
+        }
+        else if (tree_nodes.at(i) == 'b')
+        {
+            hold_key = stoi(hold_str);
+            hold_color = BLACK;
             
-    //     }
-    //     else if (tree_nodes.at(i) == 'r')
-    //     {
-    //         // red node
-    //         hold_node.color = RED;
-    //         hold_node.key = stoi(hold_str);
-    //     }
-    //     else if (tree_nodes.at(i) == 'f')
-    //     {
-    //         // leaf node
-    //         hold_node.color = BLACK;
-    //         hold_node.key = NIL_KEY; // leaf marker
-    //     }
-    //     else
-    //     {
-    //         hold_str.push_back(tree_nodes.at(i));
-    //     }
-    //     if (i+1 == tree_nodes.length())
-    //     {
-    //         cout << "Hold node: " << hold_node.key << endl;
-    //         add_child(tree, &hold_node);
-    //         hold_str = "";
-    //         hold_node = {
-    //             0,
-    //             nullptr,
-    //             nullptr,
-    //             nullptr,
-    //             false,
-    //         };
-    //     }
-    // }
+        }
+        else if (tree_nodes.at(i) == 'r')
+        {
+            // red node
+            hold_color = RED;
+            hold_key = stoi(hold_str);
+        }
+        else if (tree_nodes.at(i) == 'f')
+        {
+            // leaf node
+            hold_color = BLACK;
+            hold_key = NIL_KEY; // leaf marker
+        }
+        else
+        {
+            hold_str.push_back(tree_nodes.at(i));
+        }
+        if (i+1 == tree_nodes.length())
+        {
+            // The last element in the tree descriptors is always an f
+            this->add_node(new node(-1, BLACK));
+        }
+    }
 
-    // // string hold = "";
-    // // for (size_t i = 16; i < line.length(); i++)
-    // // {
-    // //     hold += line.at(i);
-    // // }
-    // // search_threads = stoi(hold);
-    // // getline(inFile, line);
-    // // hold = "";
-    // // for (size_t i = 16; i < line.length(); i++)
-    // // {
-    // //     hold += line.at(i);
-    // // }
-    // // modify_threads = stoi(hold);
-    // return true;
+    // string hold = "";
+    // for (size_t i = 16; i < line.length(); i++)
+    // {
+    //     hold += line.at(i);
+    // }
+    // search_threads = stoi(hold);
+    // getline(inFile, line);
+    // hold = "";
+    // for (size_t i = 16; i < line.length(); i++)
+    // {
+    //     hold += line.at(i);
+    // }
+    // modify_threads = stoi(hold);
 }
 
 /**
@@ -157,12 +155,25 @@ void tree::build_from_file(char const * fname,
  */
 void tree::add_node(node * insert)
 {
-    // we will assume that location is always at the correct spot in the tree
-    if (this->location->left() == nullptr) 
+    if (this->root == nullptr) 
     {
-        insert->parent = this->location;
-        this->location->set_left(insert);
+        root = insert;
+        location = root;
+        return;
     }
+    if (this->location->get_left() == nullptr) 
+    {
+        insert->set_parent(this->location);
+        this->location->set_left(insert);
+        this->location = insert;
+    }
+    else if (this->location->get_right() == nullptr)
+    {
+        insert->set_parent(this->location);
+        this->location->set_right(insert);
+        this->location = insert;
+    }
+    else throw "Bad news";
 }
 
 // void balance_tree(tree_t * tree)
@@ -186,15 +197,6 @@ void tree::add_node(node * insert)
 //     n->parent = y;
 // }
 
-/** 
- * Prints a given node
- */
-void node::print()
-{
-    cout << this->key << endl;
-    cout << this->color << endl;
-}
-
 /**
  * Main entry point of the application
  * */
@@ -206,7 +208,8 @@ int main()
     tree * BinaryTree = new tree();
 
     // build from file here
-    
+    BinaryTree->build_from_file(fname, searchThreads, modifyThreads);
+
 
     delete BinaryTree;
     return 0;
