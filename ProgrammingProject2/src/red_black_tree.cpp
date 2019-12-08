@@ -9,16 +9,19 @@ class tree
         int data;
         node* left;
         node* right;
+        node* parent;
         bool color;
     };
 
     int search_threads, modify_threads;
     node * root;
+    node ** location; // a pointer to the current location in the tree, for initialization
 
     public:
         tree()
         {
             root = NULL;
+            location = &root;
         }
         tree(char const * fname)
         {
@@ -44,7 +47,10 @@ class tree
                 if (tree_nodes.at(i) == ',')
                 {
                     //cout << "New node found: " << hold_key << endl;
-                    root = insert(hold_key, hold_color, root);
+                    node * hold_node = new node();
+                    hold_node -> color = hold_color;
+                    hold_node -> data = hold_key;
+                    insert_in_order(hold_node);
                     hold_key = 0;
                     hold_color = BLACK;
                     hold_str = "";
@@ -172,15 +178,24 @@ class tree
             else if(x > t->data) return find(t->right, x);
             else return t;
         }
-        void insert_in_order(node* in, node* location, node* parent)
+        void insert_in_order(node* in)
         {
             // this is for the initial build
             if (root == NULL)
             {
                 root = in;
-                location = root;
-                parent = NULL;
-                return;
+                location = &root;
+                cout << "Root = " << root->data << endl;
+            }
+            else
+            {
+                node * current = *location;
+                cout << "Current location is at : " <<  current->data << endl;
+                if (current->left == NULL)
+                {
+                    // insert this node on the left
+                }
+                cout << "In node : " << in->data << endl;
             }
         }
         void print()
