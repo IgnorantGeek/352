@@ -15,13 +15,12 @@ class tree
 
     int search_threads, modify_threads;
     node * root;
-    node ** location; // a pointer to the current location in the tree, for initialization
+    node * location; // a pointer to the current location in the tree, for initialization
 
     public:
         tree()
         {
             root = NULL;
-            location = &root;
         }
         tree(char const * fname)
         {
@@ -46,11 +45,10 @@ class tree
             {
                 if (tree_nodes.at(i) == ',')
                 {
-                    //cout << "New node found: " << hold_key << endl;
                     node * hold_node = new node();
                     hold_node -> color = hold_color;
                     hold_node -> data = hold_key;
-                    insert_in_order(hold_node);
+                    this->insert_in_order(hold_node);
                     hold_key = 0;
                     hold_color = BLACK;
                     hold_str = "";
@@ -79,8 +77,10 @@ class tree
                 }
                 if (i+1 == tree_nodes.length())
                 {
-                    // The last element in the tree descriptors is always an f
-                    root = insert(hold_key, hold_color, root);
+                    node * hold_node = new node();
+                    hold_node -> color = hold_color;
+                    hold_node -> data = hold_key;
+                    this->insert_in_order(hold_node);
                 }
             }
 
@@ -167,8 +167,8 @@ class tree
         void traverse(node* t)
         {
             if(t == NULL) return;
-            traverse(t->left);
             cout << t->data << " ";
+            traverse(t->left);
             traverse(t->right);
         }
         node * find(node *t, int x)
@@ -184,18 +184,39 @@ class tree
             if (root == NULL)
             {
                 root = in;
-                location = &root;
+                location = root;
                 cout << "Root = " << root->data << endl;
             }
             else
             {
-                node * current = *location;
-                cout << "Current location is at : " <<  current->data << endl;
-                if (current->left == NULL)
+                cout << "Current location is at : " <<  location->data << endl;
+                if (location->left == NULL)
                 {
                     // insert this node on the left
+                    cout << "Inserting node : " << in->data << " as left node of parent : " << location->data << endl;
+                    in->parent = location;
+                    location->left = in;
                 }
-                cout << "In node : " << in->data << endl;
+                else
+                {
+                    // insert it on the right
+                    cout << "Inserting node : " << in->data << " as right node of parent : " << location->data << endl;
+                    in->parent = location;
+                    location->right = in;
+                }
+                if (in->data == NIL_KEY)
+                {
+                    cout << "Begin parsing up" << endl;
+                    node * scan = location;
+                    while (scan->right != NULL)
+                    {
+                        scan = scan->parent;
+                        if (scan == root && root->right != NULL) return;
+                    }
+                    location = scan;
+                }
+                else location = in;
+                cout << "Location is now : " << location->data << endl;
             }
         }
         void print()
