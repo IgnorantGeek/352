@@ -2,200 +2,193 @@
 
 using namespace std;
 
-void node::set_children(node * _left, node * _right)
+class tree
 {
-    left = _left;
-    this->right = _right;
-}
-
-void node::set_color(bool _color)
-{
-    this->color = _color;
-}
-
-void node::set_left(node * _left)
-{
-    this->left = _left;
-}
-
-void node::set_right(node * _right)
-{
-    this->right = _right;
-}
-
-void node::set_parent(node * _parent)
-{
-    this->parent = _parent;
-}
-
-void node::print()
-{
-    cout << this->key << endl;
-    cout << this->color << endl;
-}
-
-node::node()
-{
-    this->key = 0;
-    this->color = false;
-    this->left = nullptr;
-    this->right = nullptr;
-    this->parent = nullptr;
-}
-
-node::node(int key)
-{
-    this->key = key;
-    this->color = false;
-    this->left = nullptr;
-    this->right = nullptr;
-    this->parent = nullptr;
-}
-
-node::node(int key, bool color)
-{
-    this->key = key;
-    this->color = color;
-    this->left = nullptr;
-    this->right = nullptr;
-    this->parent = nullptr;
-}
-
-
-
-tree::tree()
-{
-    this->root = nullptr;
-    this->location = root;
-}
-
-tree::~tree()
-{
-    // delete all the nodes underneath root, then delete root
-}
-
-void tree::build_from_file(char const * fname,
-                           int search_threads,
-                           int modify_threads)
-{
-    ifstream inFile;
-    inFile.open(fname, ios::in);
-    if (!inFile.is_open())
+    struct node
     {
-        cout << "Could not find the file with name: " << fname << endl;
-        cout << "Note, the full path of the file is required." << endl;
-        return;
-    }
-    string line;
-    
-    string tree_nodes;
+        int data;
+        node* left;
+        node* right;
+        bool color;
+    };
 
-    getline(inFile, tree_nodes);
-    
-    string hold_str = "";
-    int hold_key = 0;
-    bool hold_color = BLACK;
-    for (size_t i = 0; i < tree_nodes.length(); i++)
-    {
-        if (tree_nodes.at(i) == ',')
+    int search_threads, modify_threads;
+    node * root;
+
+    public:
+        tree()
         {
-            node * hold_node = new node(hold_key, hold_color);
-            cout << "New node found: " << hold_node->get_key() << endl;
-            this->add_node(hold_node);
-            hold_key = 0;
-            hold_color = BLACK;
-            hold_str = "";
+            root = NULL;
         }
-        else if (tree_nodes.at(i) == 'b')
+        tree(char const * fname)
         {
-            hold_key = stoi(hold_str);
-            hold_color = BLACK;
+            ifstream inFile;
+            inFile.open(fname, ios::in);
+            if (!inFile.is_open())
+            {
+                cout << "Could not find the file with name: " << fname << endl;
+                cout << "Note, the full path of the file is required." << endl;
+                return;
+            }
+            string line;
             
+            string tree_nodes;
+
+            getline(inFile, tree_nodes);
+            
+            string hold_str = "";
+            int hold_key = 0;
+            bool hold_color = BLACK;
+            for (size_t i = 0; i < tree_nodes.length(); i++)
+            {
+                if (tree_nodes.at(i) == ',')
+                {
+                    //cout << "New node found: " << hold_key << endl;
+                    root = insert(hold_key, hold_color, root);
+                    hold_key = 0;
+                    hold_color = BLACK;
+                    hold_str = "";
+                }
+                else if (tree_nodes.at(i) == 'b')
+                {
+                    hold_key = stoi(hold_str);
+                    hold_color = BLACK;
+                    
+                }
+                else if (tree_nodes.at(i) == 'r')
+                {
+                    // red node
+                    hold_color = RED;
+                    hold_key = stoi(hold_str);
+                }
+                else if (tree_nodes.at(i) == 'f')
+                {
+                    // leaf node
+                    hold_color = BLACK;
+                    hold_key = NIL_KEY; // leaf marker
+                }
+                else
+                {
+                    hold_str.push_back(tree_nodes.at(i));
+                }
+                if (i+1 == tree_nodes.length())
+                {
+                    // The last element in the tree descriptors is always an f
+                    root = insert(hold_key, hold_color, root);
+                }
+            }
+
+            // string hold = "";
+            // for (size_t i = 16; i < line.length(); i++)
+            // {
+            //     hold += line.at(i);
+            // }
+            // search_threads = stoi(hold);
+            // getline(inFile, line);
+            // hold = "";
+            // for (size_t i = 16; i < line.length(); i++)
+            // {
+            //     hold += line.at(i);
+            // }
+            // modify_threads = stoi(hold);
         }
-        else if (tree_nodes.at(i) == 'r')
+        ~tree()
         {
-            // red node
-            hold_color = RED;
-            hold_key = stoi(hold_str);
+            root = clear(root);
         }
-        else if (tree_nodes.at(i) == 'f')
+        node * findMin(node * t)
         {
-            // leaf node
-            hold_color = BLACK;
-            hold_key = NIL_KEY; // leaf marker
+            if(t == NULL) return NULL;
+            else if(t->left == NULL) return t;
+            else return findMin(t->left);
         }
-        else
+        node * findMax(node * t)
         {
-            hold_str.push_back(tree_nodes.at(i));
+            if(t == NULL) return NULL;
+            else if(t->right == NULL) return t;
+            else return findMax(t->right);
         }
-        if (i+1 == tree_nodes.length())
+        node * clear(node* t)
         {
-            // The last element in the tree descriptors is always an f
-            this->add_node(new node(-1, BLACK));
+            if(t == NULL)
+            return NULL;
+            {
+                clear(t->left);
+                clear(t->right);
+                delete t;
+            }
+            return NULL;
         }
-    }
+        node * insert(int x, bool c, node* t)
+        {
+            if(t == NULL)
+            {
+                t = new node;
+                t->data = x;
+                t->color = c;
+                t->left = t->right = NULL;
+            }
+            else if(x < t->data)
+                t->left = insert(x, c, t->left);
+            else if(x > t->data)
+                t->right = insert(x, c, t->right);
+            return t;
+        }
+        node * remove(int x, node* t)
+        {
+            node* temp;
+            if(t == NULL) return NULL;
+            else if(x < t->data) t->left = remove(x, t->left);
+            else if(x > t->data) t->right = remove(x, t->right);
+            else if(t->left && t->right)
+            {
+                temp = findMin(t->right);
+                t->data = temp->data;
+                t->right = remove(t->data, t->right);
+            }
+            else
+            {
+                temp = t;
+                if(t->left == NULL)
+                    t = t->right;
+                else if(t->right == NULL)
+                    t = t->left;
+                delete temp;
+            }
 
-    // string hold = "";
-    // for (size_t i = 16; i < line.length(); i++)
-    // {
-    //     hold += line.at(i);
-    // }
-    // search_threads = stoi(hold);
-    // getline(inFile, line);
-    // hold = "";
-    // for (size_t i = 16; i < line.length(); i++)
-    // {
-    //     hold += line.at(i);
-    // }
-    // modify_threads = stoi(hold);
-}
-
-/**
- * Method to insert a new node into the tree
- */
-void tree::add_node(node * insert)
-{
-    if (this->root == nullptr) 
-    {
-        root = insert;
-        location = root;
-        return;
-    }
-    if (this->location->get_left() == nullptr) 
-    {
-        insert->set_parent(this->location);
-        this->location->set_left(insert);
-        this->location = insert;
-    }
-    else if (this->location->get_right() == nullptr)
-    {
-        insert->set_parent(this->location);
-        this->location->set_right(insert);
-        this->location = insert;
-    }
-    else throw "Bad news";
-}
-
-// void balance_tree(tree_t * tree)
-// {
-
-// }
-
-/** 
- * Performs a left rotate at a given node in the tree
- */
-// void tree::left_rotate(node_t * n)
-// {
-//     node_t * y = n->right;
-//     n->right = y->left;
-//     if (y->left != nullptr) y->left->parent = n;
-//     y->parent = n->parent;
-//     if (n->parent == nullptr) tree->root = y;
-//     else if (n == n->parent->left) n->parent->left = y;
-//     else n->parent->right = y;
-//     y->left = n;
-//     n->parent = y;
-// }
+            return t;
+        }
+        void traverse(node* t)
+        {
+            if(t == NULL) return;
+            traverse(t->left);
+            cout << t->data << " ";
+            traverse(t->right);
+        }
+        node * find(node *t, int x)
+        {
+            if(t == NULL) return NULL;
+            else if(x < t->data) return find(t->left, x);
+            else if(x > t->data) return find(t->right, x);
+            else return t;
+        }
+        void insert_in_order(node* in, node* location, node* parent)
+        {
+            // this is for the initial build
+            if (root == NULL)
+            {
+                root = in;
+                location = root;
+                parent = NULL;
+                return;
+            }
+        }
+        void print()
+        {
+            traverse(root);
+            cout << endl;
+        }
+};
 
 /**
  * Main entry point of the application
@@ -203,13 +196,9 @@ void tree::add_node(node * insert)
 int main()
 {
     char const * fname = DEFAULT_FILE_LOC;
-    int searchThreads = 0;
-    int modifyThreads = 0;
-    tree * BinaryTree = new tree();
+    tree * BinaryTree = new tree(fname);
 
-    // build from file here
-    BinaryTree->build_from_file(fname, searchThreads, modifyThreads);
-
+    BinaryTree->print();
 
     delete BinaryTree;
     return 0;
