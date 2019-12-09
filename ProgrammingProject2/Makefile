@@ -1,6 +1,6 @@
 CXX      := -g++
 CXXFLAGS := -pedantic-errors -Wall -Wextra
-LDFLAGS  := -L/usr/lib -lstdc++ -lm
+LDFLAGS  := -L/usr/lib -lstdc++ -lm -pthread
 BUILD    := ./bin
 OBJ_DIR  := $(BUILD)/objects
 APP_DIR  := $(BUILD)/apps

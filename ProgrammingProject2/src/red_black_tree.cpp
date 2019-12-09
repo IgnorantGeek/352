@@ -246,16 +246,12 @@ class tree
         }
 };
 
-struct arg_struct
-{
-    tree * tree;
-    int x;
-};
+tree * BinaryTree = new tree(DEFAULT_FILE_LOC);
 
 void * generic_insert(void * arguments)
 {
-    struct arg_struct *args = (struct arg_struct *)arguments;
-    args->tree->search(args->x);
+    int x = * (int *) arguments;
+    return BinaryTree->search(x);
 }
 
 /**
@@ -263,14 +259,13 @@ void * generic_insert(void * arguments)
  * */
 int main()
 {
-    char const * fname = DEFAULT_FILE_LOC;
     pthread_attr_t attr;
     pthread_t tid;
     pthread_attr_init(&attr);
-    tree * BinaryTree = new tree(fname);
 
-    int search = 18;
-    pthread_create(&tid, &attr, BinaryTree->search, &search);
+    int arg = 10;
+
+    pthread_create(&tid, &attr, generic_insert, &arg);
 
     BinaryTree->print();
 
